@@ -9,4 +9,20 @@
         <item>@string/settings_order_by_magnitude_value</item>
         <item>@string/settings_order_by_most_recent_value</item>
     </string-array>
+
+    <string-array name="settings_limit_labels">
+        <item>Atmost 20</item>
+        <item>Atmost 40</item>
+        <item>Atmost 80</item>
+        <item>Atmost 150</item>
+        <item>Atmost 300</item>
+    </string-array>
+
+    <string-array name="settings_limit_values">
+        <item>20</item>
+        <item>40</item>
+        <item>80</item>
+        <item>150</item>
+        <item>300</item>
+    </string-array>
 </resources>

@@ -17,4 +17,12 @@
         android:selectAllOnFocus="true"
         android:title="@string/settings_min_magnitude_label" />
 
+    <ListPreference
+        android:defaultValue="@string/settings_number_of_results_default_value"
+        android:entries="@array/settings_limit_labels"
+        android:entryValues="@array/settings_limit_values"
+        android:key="@string/settings_number_of_results_key"
+        android:title="@string/settings_number_of_results_label"
+        />
+
 </PreferenceScreen>

@@ -27,7 +27,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,7 +47,7 @@ import java.util.List;
 
 import static java.security.AccessController.getContext;
 
-public class EarthquakeActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Earthquake>>{
+public class EarthquakeActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Earthquake>>, SwipeRefreshLayout.OnRefreshListener{
 
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
     private static final String USGS_REQUEST_URL="http://earthquake.usgs.gov/fdsnws/event/1/query";
@@ -54,6 +56,7 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
     private ListView earthquakeListView;
     private TextView emptyView;
     private ProgressBar pb;
+    private SwipeRefreshLayout mySwipeRefreshLayout;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -73,17 +76,28 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
     }
 
     @Override
+    public void onRefresh() {
+        startLoadingContent();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.earthquake_activity);
         Log.v(LOG_TAG,"EarthquakeActivity onCreate() !");
 
+        mySwipeRefreshLayout= (SwipeRefreshLayout)findViewById(R.id.swipe_refresh);
+        mySwipeRefreshLayout.setOnRefreshListener(this);
 
         /*
         EarthquakeAsyncTask searchEarthquakes =new EarthquakeAsyncTask();
         searchEarthquakes.execute(USGS_REQUEST_URL);
         */
 
+        startLoadingContent();
+    }
+
+    private void startLoadingContent() {
         // Checking Network Status
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -105,27 +119,31 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
             getLoaderManager().initLoader(0, null, EarthquakeActivity.this);
 
             earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                  @Override
-                  public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                      Earthquake obj = earthquakes.get(i);
-                      String url = obj.getURL();
-                      try {
-                          Intent in = new Intent(Intent.ACTION_VIEW);
-                          in.setData(Uri.parse(url));
-                          startActivity(in);
-                      } catch (ActivityNotFoundException e) {
-                          Toast.makeText(EarthquakeActivity.this, "No application can handle this request."
-                                  + " Please install a web browser", Toast.LENGTH_LONG).show();
-                          e.printStackTrace();
-                      }
-                  }
-              }
+                                                          @Override
+                                                          public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                                              Earthquake obj = earthquakes.get(i);
+                                                              String url = obj.getURL();
+                                                              try {
+                                                                  Intent in = new Intent(Intent.ACTION_VIEW);
+                                                                  in.setData(Uri.parse(url));
+                                                                  startActivity(in);
+                                                              } catch (ActivityNotFoundException e) {
+                                                                  Toast.makeText(EarthquakeActivity.this, "No application can handle this request."
+                                                                          + " Please install a web browser", Toast.LENGTH_LONG).show();
+                                                                  e.printStackTrace();
+                                                              }
+                                                          }
+                                                      }
             );
+            mySwipeRefreshLayout.setEnabled(false);
         }else {
             emptyView.setVisibility(View.VISIBLE);
-            emptyView.setText("No internet connection");
+            emptyView.setText("No internet connection.\nSwipe down when connected.");
             pb.setVisibility(View.GONE);
+            mySwipeRefreshLayout.setEnabled(true);
         }
+        // stopping swipe refresh
+        mySwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -133,20 +151,20 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        String minMagnitude = sharedPrefs.getString(
-                getString(R.string.settings_min_magnitude_key),
+        String minMagnitude = sharedPrefs.getString(getString(R.string.settings_min_magnitude_key),
                 getString(R.string.settings_min_magnitude_default));
 
-        String orderBy = sharedPrefs.getString(
-                getString(R.string.settings_order_by_key),
-                getString(R.string.settings_order_by_default)
-        );
+        String orderBy = sharedPrefs.getString(getString(R.string.settings_order_by_key),
+                getString(R.string.settings_order_by_default));
+
+        String limit = sharedPrefs.getString(getString(R.string.settings_number_of_results_key),
+                getString(R.string.settings_number_of_results_default_value));
 
         Uri baseUri = Uri.parse(USGS_REQUEST_URL);
         Uri.Builder uriBuilder = baseUri.buildUpon();
 
         uriBuilder.appendQueryParameter("format", "geojson");
-        uriBuilder.appendQueryParameter("limit", "30");
+        uriBuilder.appendQueryParameter("limit", limit);
         uriBuilder.appendQueryParameter("minmag", minMagnitude);
         uriBuilder.appendQueryParameter("orderby", orderBy);
 

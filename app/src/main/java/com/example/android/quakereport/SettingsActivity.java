@@ -20,6 +20,7 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.settings_activity);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
+
     public static class EarthquakePreferenceFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener{
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -31,6 +32,9 @@ public class SettingsActivity extends AppCompatActivity {
 
             Preference orderBy = findPreference(getString(R.string.settings_order_by_key));
             bindPreferenceSummaryToValue(orderBy);
+
+            Preference limit = findPreference(getString(R.string.settings_number_of_results_key));
+            bindPreferenceSummaryToValue(limit);
         }
 
         @Override
