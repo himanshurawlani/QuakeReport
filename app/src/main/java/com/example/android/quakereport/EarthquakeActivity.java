@@ -50,7 +50,7 @@ import static java.security.AccessController.getContext;
 public class EarthquakeActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Earthquake>>, SwipeRefreshLayout.OnRefreshListener{
 
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
-    private static final String USGS_REQUEST_URL="http://earthquake.usgs.gov/fdsnws/event/1/query";
+    private static final String USGS_REQUEST_URL="https://earthquake.usgs.gov/fdsnws/event/1/query";
     private ArrayList<Earthquake> earthquakes;
     private EarthquakeAdapter mAdapter;
     private ListView earthquakeListView;
