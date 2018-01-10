@@ -1,5 +1,6 @@
 package com.example.android.quakereport;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -14,11 +15,19 @@ import android.support.v7.app.AppCompatActivity;
  */
 
 public class SettingsActivity extends AppCompatActivity {
+    private static int result_code=0;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = getIntent();
+        setResult(result_code,intent);
+        super.onBackPressed();
     }
 
     public static class EarthquakePreferenceFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener{
@@ -50,6 +59,7 @@ public class SettingsActivity extends AppCompatActivity {
             } else {
                 preference.setSummary(stringValue);
             }
+            result_code=1;
             return true;
         }
 

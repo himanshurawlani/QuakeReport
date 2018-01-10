@@ -25,8 +25,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
     private static final String LOCATION_SEPARATOR = " of ";
 
-    public EarthquakeAdapter(Activity context, ArrayList<Earthquake> e)
-    {
+    public EarthquakeAdapter(Activity context, ArrayList<Earthquake> e) {
         super(context,0,e);
     }
 
@@ -35,8 +34,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         View listItemView = convertView;
-        if(listItemView==null)
-        {
+        if(listItemView==null) {
             listItemView= LayoutInflater.from(getContext()).inflate(R.layout.list_item,parent,false);
         }
 

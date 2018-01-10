@@ -69,10 +69,22 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             Intent settingsIntent = new Intent(this, SettingsActivity.class);
-            startActivity(settingsIntent);
+            startActivityForResult(settingsIntent,1);
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==1 && resultCode==1){
+            mAdapter.clear();
+            pb= (ProgressBar)findViewById(R.id.loading_spinner);
+            pb.setVisibility(View.VISIBLE);
+            getLoaderManager().restartLoader(0,null,EarthquakeActivity.this);
+        }
     }
 
     @Override
@@ -176,10 +188,6 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
     public void onLoadFinished(Loader<List<Earthquake>> loader, List<Earthquake> earthquake) {
 
         pb.setVisibility(View.GONE);
-
-        earthquakeListView.setEmptyView(emptyView);
-        emptyView.setVisibility(View.VISIBLE);
-
         if(earthquake!=null && !earthquake.isEmpty()) {
             mAdapter.clear();
             // Create a new {@link ArrayAdapter} of earthquakes
@@ -188,6 +196,10 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
             // Set the adapter on the {@link ListView}
             // so the list can be populated in the user interface
             earthquakeListView.setAdapter(mAdapter);
+        }else{
+
+            earthquakeListView.setEmptyView(emptyView);
+            emptyView.setVisibility(View.VISIBLE);
         }
         Log.v(LOG_TAG,"ran onLoadFinished() !");
     }
